@@ -10,12 +10,16 @@ import {
   styled,
   IconButton,
   Popover,
-  Stack
+  Stack,
+  Tooltip
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import { Feedback } from 'types'
-import { selectConversation, startConversation } from 'redux/chatSlice'
+import { startConversation } from 'redux/chatSlice'
+import toast from 'react-hot-toast'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const SidebarContainer = styled(Box)({
   height: '100vh',
@@ -27,6 +31,7 @@ const SidebarContainer = styled(Box)({
 })
 
 const Sidebar: React.FC = () => {
+  const { id } = useParams<{ id?: string }>()
   const dispatch = useDispatch()
   const conversations = useSelector(
     (state: RootState) => state.chat.conversations
@@ -50,10 +55,11 @@ const Sidebar: React.FC = () => {
   }
 
   const open = Boolean(anchorEl)
+  const navigate = useNavigate()
 
   const handleSidebarConversationClick = (id: string) => () => {
     console.log('clicked on conversation with id:', id)
-    dispatch(selectConversation(id))
+    navigate(`/chat/${id}`)
   }
 
   const createNewConversation = () => {
@@ -61,7 +67,18 @@ const Sidebar: React.FC = () => {
     dispatch(startConversation())
   }
 
-  console.log({ conversations })
+  const handleShareConversation = (id: string) => {
+    // Implement the share functionality here
+    // For now, we'll just log the conversation ID
+    console.log('Sharing conversation with id:', id)
+    // Generate a shareable link (this would typically involve some backend call)
+    const shareableLink = `${window.location.origin}/chat/${id}`
+    navigator.clipboard.writeText(shareableLink).then(() => {
+      toast.success('Shareable link copied to clipboard!')
+    })
+  }
+
+  console.log({ conversations, id })
 
   return (
     <SidebarContainer>
@@ -84,7 +101,7 @@ const Sidebar: React.FC = () => {
             onClick={handleSidebarConversationClick(conv.id)}
             sx={{
               marginBottom: '1rem',
-              backgroundColor: '#fff',
+              backgroundColor: conv.id === id ? '#bfbfbf' : '#fff',
               borderRadius: '0.5rem',
               padding: '1rem',
               cursor: 'pointer',
@@ -95,14 +112,27 @@ const Sidebar: React.FC = () => {
             }}
           >
             <ListItemText primary={conv.name} />
-            <IconButton
-              onClick={(event) => {
-                event.stopPropagation()
-                handlePopoverOpen(event, conv.feedback)
-              }}
-            >
-              <InfoOutlinedIcon />
-            </IconButton>
+            <Tooltip title="Share">
+              <IconButton
+                onClick={(event) => {
+                  event.stopPropagation()
+                  handleShareConversation(conv.id)
+                }}
+              >
+                <ShareOutlinedIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Info">
+              <IconButton
+                onClick={(event) => event.stopPropagation()}
+                onMouseEnter={(event) =>
+                  handlePopoverOpen(event, conv.feedback)
+                }
+                onMouseLeave={handlePopoverClose}
+              >
+                <InfoOutlinedIcon />
+              </IconButton>
+            </Tooltip>
             <Popover
               open={open}
               anchorEl={anchorEl}

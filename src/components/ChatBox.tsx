@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '../redux/store'
+import { useParams, useNavigate } from 'react-router-dom'
+import { persistor, RootState } from '../redux/store'
 import {
   startConversation,
   addMessage,
-  endConversation
+  endConversation,
+  selectConversation
 } from '../redux/chatSlice'
 import {
   Button,
@@ -24,6 +26,7 @@ import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined'
 import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined'
 import { Conversation } from 'types'
 import { nanoid } from 'nanoid'
+import toast from 'react-hot-toast'
 
 const StyledBox = styled(Box)(() => ({
   position: 'relative',
@@ -40,8 +43,14 @@ const FeedbackIcons = styled(Box)(({ theme }) => ({
 }))
 
 const ChatBox = () => {
+  const { id } = useParams<{ id?: string }>()
+  const navigate = useNavigate()
+  console.log({ id })
   const dispatch = useDispatch()
   const chat = useSelector((state: RootState) => state.chat.currentConversation)
+  const conversations = useSelector(
+    (state: RootState) => state.chat.conversations
+  )
   const [currentConversation, setCurrentConversation] = useState<Conversation>({
     id: nanoid(6),
     name: '',
@@ -50,18 +59,26 @@ const ChatBox = () => {
   })
 
   useEffect(() => {
+    if (id) {
+      const conversation = conversations.find((conv) => conv.id === id)
+      if (conversation) {
+        dispatch(selectConversation(id))
+      } else {
+        // If the conversation doesn't exist, start a new one
+        dispatch(startConversation())
+      }
+    } else {
+      dispatch(startConversation())
+    }
+  }, [id, conversations, dispatch])
+
+  useEffect(() => {
     if (chat) setCurrentConversation(chat)
   }, [chat])
 
-  console.log({ chat, currentConversation })
   const [message, setMessage] = useState('')
 
   const [modalOpen, setModalOpen] = useState(false)
-
-  useEffect(() => {
-    // Start a new conversation when the component mounts
-    dispatch(startConversation())
-  }, [dispatch])
 
   const handleSendMessage = () => {
     if (message.trim() === '') return // Sanitize input, prevent empty messages
@@ -71,6 +88,7 @@ const ChatBox = () => {
       dispatch(addMessage({ text: 'AI Response', ai: true }))
     }, 500)
     setMessage('')
+    persistor.persist()
   }
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -100,18 +118,21 @@ const ChatBox = () => {
       currentConversation.feedback?.rating === 0 ||
       !currentConversation.feedback?.rating
     ) {
-      alert('Please provide a star rating.')
+      toast.error('Please provide a star rating.')
       return
     }
     if (currentConversation.name?.trim() === '') {
-      alert('Please provide a name for the conversation.')
+      toast.error('Please provide a name for the conversation.')
       return
     }
     if (currentConversation) {
       console.log({ currentConversation })
       dispatch(endConversation(currentConversation))
+      persistor.persist()
+      navigate(`/chat/${currentConversation.id}`)
     }
     dispatch(startConversation())
+    persistor.persist()
     setModalOpen(false)
   }
 
