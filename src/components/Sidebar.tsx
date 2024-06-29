@@ -1,6 +1,6 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
-import { RootState } from '../redux/store'
+import { useSelector, useDispatch } from 'react-redux'
+import { RootState } from 'redux/store'
 import {
   List,
   ListItem,
@@ -25,6 +25,7 @@ const SidebarContainer = styled(Box)({
 })
 
 const Sidebar: React.FC = () => {
+  const dispatch = useDispatch()
   const conversations = useSelector(
     (state: RootState) => state.chat.conversations
   )
@@ -50,7 +51,7 @@ const Sidebar: React.FC = () => {
 
   const handleSidebarConversationClick = (id: string) => () => {
     console.log('clicked on conversation with id:', id)
-    selectConversation(id)
+    dispatch(selectConversation(id))
   }
 
   console.log({ conversations })
