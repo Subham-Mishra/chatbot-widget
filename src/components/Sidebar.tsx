@@ -9,11 +9,13 @@ import {
   Box,
   styled,
   IconButton,
-  Popover
+  Popover,
+  Stack
 } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Feedback } from 'types'
-import { selectConversation } from 'redux/chatSlice'
+import { selectConversation, startConversation } from 'redux/chatSlice'
 
 const SidebarContainer = styled(Box)({
   height: '100vh',
@@ -54,13 +56,27 @@ const Sidebar: React.FC = () => {
     dispatch(selectConversation(id))
   }
 
+  const createNewConversation = () => {
+    console.log('creating new conversation')
+    dispatch(startConversation())
+  }
+
   console.log({ conversations })
 
   return (
     <SidebarContainer>
-      <Typography variant="subtitle1" color="#6f6565" gutterBottom>
-        Conversations
-      </Typography>
+      <Stack
+        direction={'row'}
+        alignItems={'center'}
+        justifyContent={'space-between'}
+      >
+        <Typography variant="subtitle1" color="#6f6565" gutterBottom>
+          Conversations
+        </Typography>
+        <IconButton onClick={createNewConversation}>
+          <AddIcon />
+        </IconButton>
+      </Stack>
       <List>
         {conversations.map((conv) => (
           <ListItem
@@ -71,12 +87,19 @@ const Sidebar: React.FC = () => {
               backgroundColor: '#fff',
               borderRadius: '0.5rem',
               padding: '1rem',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+              cursor: 'pointer',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+              '&:hover': {
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+              }
             }}
           >
             <ListItemText primary={conv.name} />
             <IconButton
-              onClick={(event) => handlePopoverOpen(event, conv.feedback)}
+              onClick={(event) => {
+                event.stopPropagation()
+                handlePopoverOpen(event, conv.feedback)
+              }}
             >
               <InfoOutlinedIcon />
             </IconButton>

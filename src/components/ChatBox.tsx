@@ -83,6 +83,7 @@ const ChatBox = () => {
   const handleEndConversation = () => {
     // Prefill the conversation name
     const conversationNumber = chat ? chat.id : nanoid(6)
+    setModalOpen(true)
     setCurrentConversation({
       ...currentConversation,
       name: `Chat #${conversationNumber}: ${
@@ -92,11 +93,13 @@ const ChatBox = () => {
           : chat?.messages?.[0]?.text
       }`
     })
-    setModalOpen(true)
   }
 
   const handleFeedbackSubmit = () => {
-    if (currentConversation.feedback?.rating === 0) {
+    if (
+      currentConversation.feedback?.rating === 0 ||
+      !currentConversation.feedback?.rating
+    ) {
       alert('Please provide a star rating.')
       return
     }
@@ -120,7 +123,7 @@ const ChatBox = () => {
           <MenuItem value="chatbot">Chatbot Standard</MenuItem>
           <MenuItem value="chatbot-upgraded">Chatbot Upgraded</MenuItem>
         </Select>
-        <Avatar alt="User Avatar" src="/path-to-avatar.jpg" />
+        <Avatar alt="Subham Mishra" src="/path-to-avatar.jpg" />
       </Box>
 
       {/* Chat Messages */}
@@ -175,13 +178,15 @@ const ChatBox = () => {
           >
             Send
           </Button>
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={handleEndConversation}
-          >
-            End
-          </Button>
+          {currentConversation.messages.length > 0 && (
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleEndConversation}
+            >
+              End
+            </Button>
+          )}
         </Stack>
       </Stack>
 
