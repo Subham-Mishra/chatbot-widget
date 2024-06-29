@@ -5,11 +5,12 @@ export type Message = {
 
 export type Feedback = {
   rating: number
-  comment: string
+  comment?: string
 }
 
 export type Conversation = {
   id: string
+  name: string | null
   messages: Message[]
   feedback: Feedback | null
 }

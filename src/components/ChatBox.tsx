@@ -22,6 +22,8 @@ import {
 } from '@mui/material'
 import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined'
 import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined'
+import { Conversation } from 'types'
+import { nanoid } from 'nanoid'
 
 const StyledBox = styled(Box)(() => ({
   position: 'relative',
@@ -40,10 +42,20 @@ const FeedbackIcons = styled(Box)(({ theme }) => ({
 const ChatBox = () => {
   const dispatch = useDispatch()
   const chat = useSelector((state: RootState) => state.chat.currentConversation)
-  const [message, setMessage] = useState<string>('')
-  const [feedback, setFeedback] = useState<{ rating: number; comment: string }>(
-    { rating: 0, comment: '' }
-  )
+  const [currentConversation, setCurrentConversation] = useState<Conversation>({
+    id: nanoid(6),
+    name: '',
+    messages: [],
+    feedback: null
+  })
+
+  useEffect(() => {
+    if (chat) setCurrentConversation(chat)
+  }, [chat])
+
+  console.log({ chat, currentConversation })
+  const [message, setMessage] = useState('')
+
   const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
@@ -69,15 +81,34 @@ const ChatBox = () => {
   }
 
   const handleEndConversation = () => {
+    // Prefill the conversation name
+    const conversationNumber = chat ? chat.id : nanoid(6)
+    setCurrentConversation({
+      ...currentConversation,
+      name: `Chat #${conversationNumber}: ${
+        chat?.messages?.[0]?.text?.length &&
+        chat?.messages?.[0]?.text?.length > 20
+          ? chat?.messages?.[0]?.text.substring(0, 20) + '...'
+          : chat?.messages?.[0]?.text
+      }`
+    })
     setModalOpen(true)
   }
 
   const handleFeedbackSubmit = () => {
-    if (feedback.rating === 0) {
+    if (currentConversation.feedback?.rating === 0) {
       alert('Please provide a star rating.')
       return
     }
-    dispatch(endConversation(feedback))
+    if (currentConversation.name?.trim() === '') {
+      alert('Please provide a name for the conversation.')
+      return
+    }
+    if (currentConversation) {
+      console.log({ currentConversation })
+      dispatch(endConversation(currentConversation))
+    }
+    dispatch(startConversation())
     setModalOpen(false)
   }
 
@@ -160,12 +191,32 @@ const ChatBox = () => {
           <Typography variant="h6" gutterBottom>
             Provide Feedback
           </Typography>
+          <TextField
+            label="Conversation Name"
+            variant="outlined"
+            fullWidth
+            value={currentConversation.name}
+            onChange={(e) =>
+              setCurrentConversation({
+                ...currentConversation,
+                name: e.target.value
+              })
+            }
+            className="mt-2"
+          />
           <Rating
-            value={feedback.rating}
+            value={currentConversation.feedback?.rating}
             onChange={(e, newValue) =>
-              setFeedback({ ...feedback, rating: newValue ?? 0 })
+              setCurrentConversation({
+                ...currentConversation,
+                feedback: {
+                  ...currentConversation.feedback,
+                  rating: newValue ?? 0
+                }
+              })
             }
             size="large"
+            className="mt-2"
           />
           <TextField
             label="Feedback"
@@ -173,9 +224,15 @@ const ChatBox = () => {
             multiline
             fullWidth
             rows={4}
-            value={feedback.comment}
+            value={currentConversation.feedback?.comment}
             onChange={(e) =>
-              setFeedback({ ...feedback, comment: e.target.value })
+              setCurrentConversation({
+                ...currentConversation,
+                feedback: {
+                  rating: currentConversation.feedback?.rating ?? 0,
+                  comment: e.target.value
+                }
+              })
             }
             className="mt-2"
           />

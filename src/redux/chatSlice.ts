@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ChatState, Conversation, Feedback, Message } from 'types'
+import { ChatState, Conversation, Message } from 'types'
+import { nanoid } from 'nanoid'
 
 const initialState: ChatState = {
   conversations: [],
@@ -10,30 +11,37 @@ const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    startConversation: (state) => {
-      state.currentConversation = { messages: [], feedback: null }
+    startConversation(state) {
+      const newConversation: Conversation = {
+        id: nanoid(6),
+        name: null,
+        messages: [],
+        feedback: null
+      }
+      state.currentConversation = newConversation
     },
-    addMessage: (state, action: PayloadAction<Message>) => {
+    selectConversation(state, action: PayloadAction<string>) {
+      state.currentConversation =
+        state.conversations.find((conv) => conv.id === action.payload) || null
+    },
+    addMessage(state, action: PayloadAction<Message>) {
       state.currentConversation?.messages.push(action.payload)
     },
-    endConversation: (state, action: PayloadAction<Feedback>) => {
+    endConversation(state, action: PayloadAction<Conversation>) {
       if (state.currentConversation) {
-        state.currentConversation.feedback = action.payload
+        state.currentConversation.name = action.payload.name
+        state.currentConversation.feedback = action.payload.feedback
         state.conversations.push(state.currentConversation)
-        state.currentConversation = null
       }
-    },
-    setConversations: (state, action: PayloadAction<Conversation[]>) => {
-      state.conversations = action.payload
     }
   }
 })
 
 export const {
   startConversation,
+  selectConversation,
   addMessage,
-  endConversation,
-  setConversations
+  endConversation
 } = chatSlice.actions
 
 export default chatSlice.reducer
