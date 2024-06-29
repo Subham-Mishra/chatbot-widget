@@ -29,9 +29,19 @@ const chatSlice = createSlice({
     },
     endConversation(state, action: PayloadAction<Conversation>) {
       if (state.currentConversation) {
+        const existingConversationIndex = state.conversations.findIndex(
+          (conv) => conv.id === state.currentConversation!.id
+        )
+
         state.currentConversation.name = action.payload.name
         state.currentConversation.feedback = action.payload.feedback
-        state.conversations.push(state.currentConversation)
+
+        if (existingConversationIndex === -1) {
+          state.conversations.push(state.currentConversation)
+        } else {
+          state.conversations[existingConversationIndex] =
+            state.currentConversation
+        }
       }
     }
   }
