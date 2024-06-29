@@ -26,7 +26,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <SidebarContainer>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="subtitle1" color="#6f6565" gutterBottom>
         Conversations
       </Typography>
       <List>
@@ -52,14 +52,19 @@ const Sidebar: React.FC = () => {
                   >
                     Rating: {conv.feedback?.rating}
                   </Typography>
-                  <br />
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    color="textPrimary"
-                  >
-                    Comment: {conv.feedback?.comment}
-                  </Typography>
+                  {conv.feedback?.comment && (
+                    <>
+                      {' '}
+                      <br />
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        color="textPrimary"
+                      >
+                        Comment: {conv.feedback?.comment}
+                      </Typography>
+                    </>
+                  )}
                 </>
               }
             />

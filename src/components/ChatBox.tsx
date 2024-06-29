@@ -20,7 +20,8 @@ import {
   styled,
   Stack
 } from '@mui/material'
-import { HandThumbUpIcon, HandThumbDownIcon } from '@heroicons/react/24/outline'
+import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined'
+import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined'
 
 const StyledBox = styled(Box)(() => ({
   position: 'relative',
@@ -32,10 +33,8 @@ const StyledBox = styled(Box)(() => ({
 const FeedbackIcons = styled(Box)(({ theme }) => ({
   display: 'none',
   position: 'absolute',
-  top: '-35%',
-  left: '10%',
-  transform: 'translate(-50%, -50%)',
-  gap: theme.spacing(1)
+  left: '0%',
+  gap: theme.spacing(0.2)
 }))
 
 const ChatBox = () => {
@@ -86,20 +85,20 @@ const ChatBox = () => {
     <Box className="flex size-full flex-col">
       {/* Header */}
       <Box className="flex h-[10vh] items-center justify-between border-b border-gray-200 p-4">
-        <Select defaultValue="chatbot1" variant="outlined" size="small">
-          <MenuItem value="chatbot1">Chatbot 1</MenuItem>
-          <MenuItem value="chatbot2">Chatbot 2</MenuItem>
+        <Select defaultValue="chatbot-upgraded" variant="outlined" size="small">
+          <MenuItem value="chatbot">Chatbot Standard</MenuItem>
+          <MenuItem value="chatbot-upgraded">Chatbot Upgraded</MenuItem>
         </Select>
         <Avatar alt="User Avatar" src="/path-to-avatar.jpg" />
       </Box>
 
       {/* Chat Messages */}
-      <Box className="h-[70vh] grow overflow-y-auto p-4">
+      <Box className="h-[70vh] grow overflow-y-auto px-4 py-2">
         {chat ? (
           chat.messages.map((msg, index) => (
             <StyledBox
               key={index}
-              className={`my-2 max-w-[40%] rounded-lg p-2 ${
+              className={`my-2 w-fit max-w-[40%] rounded-lg  px-2 py-1 ${
                 msg.ai
                   ? 'bg-gray-200 text-left'
                   : 'ml-auto bg-blue-200 text-right'
@@ -109,10 +108,10 @@ const ChatBox = () => {
               {msg.ai && (
                 <FeedbackIcons className="feedback-icons">
                   <IconButton size="small">
-                    <HandThumbUpIcon className="size-5" />
+                    <ThumbUpAltOutlinedIcon />
                   </IconButton>
                   <IconButton size="small">
-                    <HandThumbDownIcon className="size-5" />
+                    <ThumbDownOutlinedIcon />
                   </IconButton>
                 </FeedbackIcons>
               )}
