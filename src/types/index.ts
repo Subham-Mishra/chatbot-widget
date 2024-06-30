@@ -1,6 +1,8 @@
 export type Message = {
   text: string
   ai: boolean
+  liked?: boolean
+  disliked?: boolean
 }
 
 export type Feedback = {

@@ -8,7 +8,11 @@ import {
   Stack
 } from '@mui/material'
 import { useDispatch } from 'react-redux'
-import { endConversation, startConversation } from '../../redux/chatSlice'
+import {
+  endConversation,
+  saveConversation,
+  startConversation
+} from '../../redux/chatSlice'
 import { persistor } from '../../redux/store'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
@@ -39,6 +43,8 @@ const FeedbackModal = ({
     }
     if (currentConversation) {
       dispatch(endConversation(currentConversation))
+      //@ts-expect-error TODO: Fix the type error
+      dispatch(saveConversation(currentConversation))
       persistor.persist()
       navigate(`/chat/${currentConversation.id}`)
     }

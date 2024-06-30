@@ -5,6 +5,7 @@ import { addMessage } from '../../redux/chatSlice'
 import { TextField, Button, Stack, styled } from '@mui/material'
 import { ChatInputProps } from 'types'
 import { theme } from 'constants/theme'
+import { getRandomAIResponse } from 'utils'
 
 const CustomTextField = styled(TextField)({
   '& .MuiOutlinedInput-root': {
@@ -33,7 +34,7 @@ const ChatInput = ({
     dispatch(addMessage({ text: message, ai: false }))
     // Mock AI response
     setTimeout(() => {
-      dispatch(addMessage({ text: 'AI Response', ai: true }))
+      dispatch(addMessage({ text: getRandomAIResponse(), ai: true }))
     }, 500)
     persistor.persist()
     setMessage('')

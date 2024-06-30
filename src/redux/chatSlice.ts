@@ -1,11 +1,24 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ChatState, Conversation, Message } from 'types'
+import axios from 'axios'
 
 const initialState: ChatState = {
   conversations: [],
   currentConversation: null
 }
 
+// Async thunk for saving a conversation to the database
+export const saveConversation = createAsyncThunk(
+  'chat/saveConversation',
+  async (conversation: Conversation, { rejectWithValue }) => {
+    try {
+      const response = await axios.post('/api/saveConversation', conversation)
+      return response.data
+    } catch (error) {
+      return rejectWithValue(error)
+    }
+  }
+)
 const chatSlice = createSlice({
   name: 'chat',
   initialState,
@@ -49,6 +62,38 @@ const chatSlice = createSlice({
             state.currentConversation
         }
       }
+    },
+    likeMessage(state, action: PayloadAction<number>) {
+      const message = state.currentConversation?.messages[action.payload]
+      if (!message?.ai) return
+      if (state.currentConversation?.messages[action.payload]) {
+        state.currentConversation.messages[action.payload].liked = true
+        state.currentConversation.messages[action.payload].disliked = false
+
+        const existingCurrentConversation = state.conversations.find(
+          (conv) => conv.id === state.currentConversation?.id
+        )
+        if (existingCurrentConversation) {
+          existingCurrentConversation.messages =
+            state.currentConversation.messages
+        }
+      }
+    },
+    dislikeMessage(state, action: PayloadAction<number>) {
+      const message = state.currentConversation?.messages[action.payload]
+      if (!message?.ai) return
+      if (state.currentConversation?.messages[action.payload]) {
+        state.currentConversation.messages[action.payload].liked = false
+        state.currentConversation.messages[action.payload].disliked = true
+
+        const existingCurrentConversation = state.conversations.find(
+          (conv) => conv.id === state.currentConversation?.id
+        )
+        if (existingCurrentConversation) {
+          existingCurrentConversation.messages =
+            state.currentConversation.messages
+        }
+      }
     }
   }
 })
@@ -57,7 +102,9 @@ export const {
   startConversation,
   selectConversation,
   addMessage,
-  endConversation
+  endConversation,
+  likeMessage,
+  dislikeMessage
 } = chatSlice.actions
 
 export default chatSlice.reducer
