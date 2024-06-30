@@ -20,6 +20,7 @@ import { Feedback } from 'types'
 import { startConversation } from 'redux/chatSlice'
 import toast from 'react-hot-toast'
 import { useNavigate, useParams } from 'react-router-dom'
+import { nanoid } from 'nanoid'
 
 const SidebarContainer = styled(Box)({
   height: '100vh',
@@ -36,6 +37,7 @@ const Sidebar: React.FC = () => {
   const conversations = useSelector(
     (state: RootState) => state.chat.conversations
   )
+  const currentConversation = useSelector((state: RootState) => state)
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
   const [currentFeedback, setCurrentFeedback] = React.useState<Feedback | null>(
     null
@@ -64,7 +66,10 @@ const Sidebar: React.FC = () => {
 
   const createNewConversation = () => {
     console.log('creating new conversation')
-    dispatch(startConversation())
+    const newConversationId = nanoid(6)
+    navigate(`/chat/${newConversationId}`)
+    dispatch(startConversation(newConversationId))
+    console.log('createNewConversation', { currentConversation })
   }
 
   const handleShareConversation = (id: string) => {
@@ -86,78 +91,88 @@ const Sidebar: React.FC = () => {
         direction={'row'}
         alignItems={'center'}
         justifyContent={'space-between'}
+        height={'2rem'}
       >
-        <Typography variant="subtitle1" color="#6f6565" gutterBottom>
+        <Typography variant="subtitle1" color="#cb2432" gutterBottom>
           Conversations
         </Typography>
-        <IconButton onClick={createNewConversation}>
+        <IconButton onClick={createNewConversation} sx={{ color: '#e43c4a' }}>
           <AddIcon />
         </IconButton>
       </Stack>
-      <List>
-        {conversations.map((conv) => (
-          <ListItem
-            key={conv.id}
-            onClick={handleSidebarConversationClick(conv.id)}
-            sx={{
-              marginBottom: '1rem',
-              backgroundColor: conv.id === id ? '#bfbfbf' : '#fff',
-              borderRadius: '0.5rem',
-              padding: '1rem',
-              cursor: 'pointer',
-              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-              '&:hover': {
-                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-              }
-            }}
-          >
-            <ListItemText primary={conv.name} />
-            <Tooltip title="Share">
+      {conversations.length === 0 ? (
+        <Stack
+          alignItems={'center'}
+          justifyContent={'center'}
+          height={'calc(100% - 2rem)'}
+        >
+          <Typography variant="subtitle1" color="#ffc3c8" gutterBottom>
+            No conversations yet
+          </Typography>
+        </Stack>
+      ) : (
+        <List>
+          {conversations.map((conv) => (
+            <ListItem
+              key={conv.id}
+              onClick={handleSidebarConversationClick(conv.id)}
+              sx={{
+                marginBottom: '1rem',
+                backgroundColor: conv.id === id ? '#ffc3c8' : '#fff',
+                borderRadius: '0.5rem',
+                padding: '1rem',
+                cursor: 'pointer',
+                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+                '&:hover': {
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+                }
+              }}
+            >
+              <ListItemText primary={conv.name} />
+              <Tooltip title="Share">
+                <IconButton
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    handleShareConversation(conv.id)
+                  }}
+                >
+                  <ShareOutlinedIcon />
+                </IconButton>
+              </Tooltip>
               <IconButton
                 onClick={(event) => {
                   event.stopPropagation()
-                  handleShareConversation(conv.id)
-                }}
-              >
-                <ShareOutlinedIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Info">
-              <IconButton
-                onClick={(event) => event.stopPropagation()}
-                onMouseEnter={(event) =>
                   handlePopoverOpen(event, conv.feedback)
-                }
-                onMouseLeave={handlePopoverClose}
+                }}
               >
                 <InfoOutlinedIcon />
               </IconButton>
-            </Tooltip>
-            <Popover
-              open={open}
-              anchorEl={anchorEl}
-              onClose={handlePopoverClose}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left'
-              }}
-            >
-              <Box sx={{ p: 2 }} maxWidth={'40rem'}>
-                <Typography variant="body2" color="textPrimary">
-                  Rating: {currentFeedback?.rating}
-                </Typography>
-                {currentFeedback?.comment && (
-                  <>
-                    <Typography variant="body2" color="textPrimary">
-                      Comment: {currentFeedback.comment}
-                    </Typography>
-                  </>
-                )}
-              </Box>
-            </Popover>
-          </ListItem>
-        ))}
-      </List>
+              <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handlePopoverClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left'
+                }}
+              >
+                <Box sx={{ p: 2 }} maxWidth={'40rem'}>
+                  <Typography variant="body2">
+                    Rating: {currentFeedback?.rating}
+                  </Typography>
+                  {currentFeedback?.comment && (
+                    <>
+                      <Typography variant="body2">
+                        Comment: {currentFeedback.comment}
+                      </Typography>
+                    </>
+                  )}
+                </Box>
+              </Popover>
+            </ListItem>
+          ))}
+        </List>
+      )}
     </SidebarContainer>
   )
 }

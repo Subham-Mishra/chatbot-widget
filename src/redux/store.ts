@@ -11,7 +11,8 @@ const rootReducer = combineReducers({
 // Redux Persist Config
 const persistConfig = {
   key: 'root',
-  storage
+  storage,
+  timeout: 10000 // 10 seconds
 }
 
 // Persisted Reducer
@@ -19,8 +20,11 @@ const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 // Configure Store
 export const store = configureStore({
-  reducer: persistedReducer
-  // Optionally, add middleware, enhancers, etc.
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false // Disable serializable check if you're sure all state is serializable
+    })
 })
 
 // Persistor

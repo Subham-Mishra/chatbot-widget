@@ -64,11 +64,13 @@ const ChatBox = () => {
       if (conversation) {
         dispatch(selectConversation(id))
       } else {
+        const newConversationId = nanoid(6)
         // If the conversation doesn't exist, start a new one
-        dispatch(startConversation())
+        dispatch(startConversation(newConversationId))
       }
     } else {
-      dispatch(startConversation())
+      const newConversationId = nanoid(6)
+      dispatch(startConversation(newConversationId))
     }
   }, [id, conversations, dispatch])
 
@@ -87,8 +89,9 @@ const ChatBox = () => {
     setTimeout(() => {
       dispatch(addMessage({ text: 'AI Response', ai: true }))
     }, 500)
-    setMessage('')
+    console.log({ chat, message })
     persistor.persist()
+    setMessage('')
   }
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -100,7 +103,7 @@ const ChatBox = () => {
 
   const handleEndConversation = () => {
     // Prefill the conversation name
-    const conversationNumber = chat ? chat.id : nanoid(6)
+    const conversationNumber = chat ? chat.id : id
     setModalOpen(true)
     setCurrentConversation({
       ...currentConversation,
@@ -131,7 +134,8 @@ const ChatBox = () => {
       persistor.persist()
       navigate(`/chat/${currentConversation.id}`)
     }
-    dispatch(startConversation())
+    const newConversationId = nanoid(6)
+    dispatch(startConversation(newConversationId))
     persistor.persist()
     setModalOpen(false)
   }
@@ -144,12 +148,16 @@ const ChatBox = () => {
           <MenuItem value="chatbot">Chatbot Standard</MenuItem>
           <MenuItem value="chatbot-upgraded">Chatbot Upgraded</MenuItem>
         </Select>
-        <Avatar alt="Subham Mishra" src="/path-to-avatar.jpg" />
+        <Avatar
+          alt="Subham Mishra"
+          src="/path-to-avatar.jpg"
+          sx={{ color: '#fff', backgroundColor: '#e43c4a' }}
+        />
       </Box>
 
       {/* Chat Messages */}
       <Box className="h-[70vh] grow overflow-y-auto px-4 py-2">
-        {chat ? (
+        {chat && chat.messages.length > 0 ? (
           chat.messages.map((msg, index) => (
             <StyledBox
               key={index}
@@ -173,7 +181,15 @@ const ChatBox = () => {
             </StyledBox>
           ))
         ) : (
-          <p>No conversation started.</p>
+          <Stack
+            justifyContent={'center'}
+            alignItems={'center'}
+            height={'100%'}
+          >
+            <Typography variant="subtitle1" color="#6f6565" gutterBottom>
+              Start new conversation by send a message
+            </Typography>
+          </Stack>
         )}
       </Box>
 
@@ -187,6 +203,7 @@ const ChatBox = () => {
           fullWidth
           multiline
           maxRows={3}
+          autoFocus
           placeholder="Type your message..."
           className="w-4/5"
         />
@@ -202,7 +219,7 @@ const ChatBox = () => {
           {currentConversation.messages.length > 0 && (
             <Button
               variant="outlined"
-              color="secondary"
+              sx={{ color: '#cb2432', borderColor: '#cb2432' }}
               onClick={handleEndConversation}
             >
               End

@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ChatState, Conversation, Message } from 'types'
-import { nanoid } from 'nanoid'
 
 const initialState: ChatState = {
   conversations: [],
@@ -11,9 +10,9 @@ const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    startConversation(state) {
+    startConversation(state, action: PayloadAction<string>) {
       const newConversation: Conversation = {
-        id: nanoid(6),
+        id: action.payload,
         name: null,
         messages: [],
         feedback: null
@@ -25,7 +24,14 @@ const chatSlice = createSlice({
         state.conversations.find((conv) => conv.id === action.payload) || null
     },
     addMessage(state, action: PayloadAction<Message>) {
-      state.currentConversation?.messages.push(action.payload)
+      const existingCurrentConversation = state.conversations.find(
+        (conv) => conv.id === state.currentConversation?.id
+      )
+      if (existingCurrentConversation) {
+        existingCurrentConversation.messages.push(action.payload)
+      } else {
+        state.currentConversation?.messages.push(action.payload)
+      }
     },
     endConversation(state, action: PayloadAction<Conversation>) {
       if (state.currentConversation) {
