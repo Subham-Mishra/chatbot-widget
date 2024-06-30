@@ -1,28 +1,16 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ChatState, Conversation, Message } from 'types'
-import axios from 'axios'
 
 const initialState: ChatState = {
   conversations: [],
   currentConversation: null
 }
 
-// Async thunk for saving a conversation to the database
-export const saveConversation = createAsyncThunk(
-  'chat/saveConversation',
-  async (conversation: Conversation, { rejectWithValue }) => {
-    try {
-      const response = await axios.post('/api/saveConversation', conversation)
-      return response.data
-    } catch (error) {
-      return rejectWithValue(error)
-    }
-  }
-)
 const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
+    // Reducer to start a new conversation
     startConversation(state, action: PayloadAction<string>) {
       const newConversation: Conversation = {
         id: action.payload,
@@ -32,10 +20,12 @@ const chatSlice = createSlice({
       }
       state.currentConversation = newConversation
     },
+    // Reducer to select an existing conversation
     selectConversation(state, action: PayloadAction<string>) {
       state.currentConversation =
         state.conversations.find((conv) => conv.id === action.payload) || null
     },
+    // Reducer to add a message to the current conversation
     addMessage(state, action: PayloadAction<Message>) {
       const existingCurrentConversation = state.conversations.find(
         (conv) => conv.id === state.currentConversation?.id
@@ -46,6 +36,7 @@ const chatSlice = createSlice({
         state.currentConversation?.messages.push(action.payload)
       }
     },
+    // Reducer to end the current conversation
     endConversation(state, action: PayloadAction<Conversation>) {
       if (state.currentConversation) {
         const existingConversationIndex = state.conversations.findIndex(
@@ -63,9 +54,10 @@ const chatSlice = createSlice({
         }
       }
     },
+    // Reducer to like a message in the current conversation
     likeMessage(state, action: PayloadAction<number>) {
       const message = state.currentConversation?.messages[action.payload]
-      if (!message?.ai) return
+      if (!message?.ai) return // Only allow liking AI messages
       if (state.currentConversation?.messages[action.payload]) {
         state.currentConversation.messages[action.payload].liked = true
         state.currentConversation.messages[action.payload].disliked = false
@@ -79,9 +71,10 @@ const chatSlice = createSlice({
         }
       }
     },
+    // Reducer to dislike a message in the current conversation
     dislikeMessage(state, action: PayloadAction<number>) {
       const message = state.currentConversation?.messages[action.payload]
-      if (!message?.ai) return
+      if (!message?.ai) return // Only allow disliking AI messages
       if (state.currentConversation?.messages[action.payload]) {
         state.currentConversation.messages[action.payload].liked = false
         state.currentConversation.messages[action.payload].disliked = true
@@ -98,6 +91,7 @@ const chatSlice = createSlice({
   }
 })
 
+// Export the actions to be used in the application
 export const {
   startConversation,
   selectConversation,
@@ -107,4 +101,5 @@ export const {
   dislikeMessage
 } = chatSlice.actions
 
+// Export the reducer to be used in the store
 export default chatSlice.reducer

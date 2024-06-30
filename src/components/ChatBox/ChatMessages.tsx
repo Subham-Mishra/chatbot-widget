@@ -2,9 +2,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Box, Typography, Stack, IconButton, styled } from '@mui/material'
 import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined'
 import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined'
-import { persistor, RootState } from '../../redux/store'
+import { persistor, RootState } from 'redux/store'
 import { useRef, useEffect } from 'react'
-import { dislikeMessage, likeMessage } from 'redux/chatSlice'
+import { dislikeMessage, likeMessage } from 'redux/slices/chatSlice'
 import { ThumbDownSharp, ThumbUpSharp } from '@mui/icons-material'
 
 const StyledBox = styled(Box)(() => ({

@@ -8,12 +8,9 @@ import {
   Stack
 } from '@mui/material'
 import { useDispatch } from 'react-redux'
-import {
-  endConversation,
-  saveConversation,
-  startConversation
-} from '../../redux/chatSlice'
-import { persistor } from '../../redux/store'
+import { endConversation, startConversation } from 'redux/slices/chatSlice'
+import { saveConversation } from 'redux/thunks/chatThunks'
+import { persistor } from 'redux/store'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { FeedbackModalProps } from 'types'
@@ -29,6 +26,21 @@ const FeedbackModal = ({
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  /**
+   * Handles the submission of feedback for the current conversation.
+   *
+   * This function performs the following steps:
+   * 1. Validates that a star rating has been provided.
+   * 2. Validates that a name for the conversation has been provided.
+   * 3. Dispatches actions to end the current conversation and save it to the database.
+   * 4. Persists the state changes.
+   * 5. Navigates to the chat page of the current conversation.
+   * 6. Starts a new conversation with a unique ID.
+   * 7. Closes the feedback modal.
+   *
+   * @throws Will display an error toast if a star rating is not provided.
+   * @throws Will display an error toast if a name for the conversation is not provided.
+   */
   const handleFeedbackSubmit = () => {
     if (
       currentConversation.feedback?.rating === 0 ||
@@ -43,7 +55,7 @@ const FeedbackModal = ({
     }
     if (currentConversation) {
       dispatch(endConversation(currentConversation))
-      //@ts-expect-error TODO: Fix the type error
+      //@ts-expect-error -> TODO: Fix type error
       dispatch(saveConversation(currentConversation))
       persistor.persist()
       navigate(`/chat/${currentConversation.id}`)
