@@ -10,6 +10,7 @@ import ChatMessages from './ChatMessages'
 import ChatInput from './ChatInput'
 import FeedbackModal from './FeedbackModal'
 import { Conversation } from 'types'
+import { truncateText } from 'utils'
 
 const ChatBox = () => {
   const { id } = useParams<{ id?: string }>()
@@ -52,12 +53,10 @@ const ChatBox = () => {
     setModalOpen(true)
     setCurrentConversation({
       ...currentConversation,
-      name: `Chat #${conversationNumber}: ${
-        chat?.messages?.[0]?.text?.length &&
-        chat?.messages?.[0]?.text?.length > 20
-          ? chat?.messages?.[0]?.text.substring(0, 20) + '...'
-          : chat?.messages?.[0]?.text
-      }`
+      name: `Chat #${conversationNumber}: ${truncateText(
+        chat?.messages?.[0]?.text,
+        8
+      )}`
     })
   }
 

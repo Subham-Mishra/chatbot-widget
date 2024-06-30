@@ -1,6 +1,7 @@
 import { List, Stack, Typography } from '@mui/material'
 import { Conversation, ConversationListProps } from 'types'
 import ConversationListItem from './ConversationListItem'
+import { theme } from 'constants/theme'
 
 const ConversationList = ({
   conversations,
@@ -14,9 +15,13 @@ const ConversationList = ({
       <Stack
         alignItems={'center'}
         justifyContent={'center'}
-        height={'calc(100% - 2rem)'}
+        height={'calc(100% - 4rem)'}
       >
-        <Typography variant="subtitle1" color="#ffc3c8" gutterBottom>
+        <Typography
+          variant="subtitle1"
+          color={theme.sidebarEmptyListColor}
+          gutterBottom
+        >
           No conversations yet
         </Typography>
       </Stack>

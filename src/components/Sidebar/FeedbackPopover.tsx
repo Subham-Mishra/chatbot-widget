@@ -16,7 +16,7 @@ const FeedbackPopover = ({
       horizontal: 'left'
     }}
   >
-    <Box sx={{ p: 2 }} maxWidth={'40rem'}>
+    <Box className="max-h-[22rem] max-w-[40rem] rounded-lg px-4 py-2">
       <Typography variant="body2">Rating: {currentFeedback?.rating}</Typography>
       {currentFeedback?.comment && (
         <>

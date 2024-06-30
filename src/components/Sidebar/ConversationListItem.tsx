@@ -2,6 +2,7 @@ import { ListItem, IconButton, Tooltip, Typography, Stack } from '@mui/material'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import { ConversationListItemProps } from 'types'
+import { theme } from 'constants/theme'
 
 const ConversationListItem = ({
   conversation,
@@ -14,7 +15,7 @@ const ConversationListItem = ({
     onClick={handleSidebarConversationClick(conversation.id)}
     sx={listItemStyles(isSelected)}
   >
-    <Typography variant="subtitle2" color="#cb2432" gutterBottom>
+    <Typography variant="subtitle2" color={theme.sidebarTextColor}>
       {conversation.name}
     </Typography>
     <Stack direction={'row'}>
@@ -25,7 +26,7 @@ const ConversationListItem = ({
             handleShareConversation(conversation.id)
           }}
         >
-          <ShareOutlinedIcon />
+          <ShareOutlinedIcon sx={{ fontSize: 18 }} />
         </IconButton>
       </Tooltip>
       <IconButton
@@ -34,7 +35,7 @@ const ConversationListItem = ({
           handlePopoverOpen(event, conversation.feedback)
         }}
       >
-        <InfoOutlinedIcon />
+        <InfoOutlinedIcon sx={{ fontSize: 18 }} />
       </IconButton>
     </Stack>
   </ListItem>
@@ -42,13 +43,18 @@ const ConversationListItem = ({
 
 const listItemStyles = (isSelected: boolean) => ({
   marginBottom: '1rem',
-  backgroundColor: isSelected ? '#ffc3c8' : '#fff',
   borderRadius: '0.5rem',
+  backgroundColor: theme.listItemBackgroundColor,
+  border: isSelected
+    ? `2px solid ${theme.selectedListItemBorderColor}`
+    : `2px solid ${theme.listItemBackgroundColor}`,
   padding: '1rem',
   display: 'flex',
   justifyContent: 'space-between',
   cursor: 'pointer',
-  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+  boxShadow: isSelected
+    ? '0 2px 4px rgba(0, 0, 0, 0.2)'
+    : '0 1px 2px rgba(0, 0, 0, 0.1)',
   '&:hover': {
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
   }
