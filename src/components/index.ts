@@ -1,2 +1,2 @@
-export * from './ChatBox'
-export * from './Sidebar'
+export * from './ChatBox/ChatBox'
+export * from './Sidebar/Sidebar'
