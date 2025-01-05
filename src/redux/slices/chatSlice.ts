@@ -20,6 +20,12 @@ const chatSlice = createSlice({
       }
       state.currentConversation = newConversation
     },
+    deleteConversation(state, action: PayloadAction<string>) {
+      console.log({ action })
+      state.conversations = state.conversations.filter(
+        (conv) => conv.id !== action.payload
+      )
+    },
     // Reducer to select an existing conversation
     selectConversation(state, action: PayloadAction<string>) {
       state.currentConversation =
@@ -94,6 +100,7 @@ const chatSlice = createSlice({
 // Export the actions to be used in the application
 export const {
   startConversation,
+  deleteConversation,
   selectConversation,
   addMessage,
   endConversation,

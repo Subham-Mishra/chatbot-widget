@@ -83,7 +83,7 @@ const ChatMessages = () => {
       ) : (
         <Stack justifyContent={'center'} alignItems={'center'} height={'100%'}>
           <Typography variant="subtitle1" color="#6f6565" gutterBottom>
-            Start new conversation by sending a message
+            Send a new message to start chatting with co-pilot
           </Typography>
         </Stack>
       )}

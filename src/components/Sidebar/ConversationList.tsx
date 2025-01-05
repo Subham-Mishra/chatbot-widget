@@ -7,6 +7,7 @@ const ConversationList = ({
   conversations,
   handleSidebarConversationClick,
   handleShareConversation,
+  handleDeleteConversation,
   handlePopoverOpen,
   currentId
 }: ConversationListProps) => (
@@ -33,6 +34,7 @@ const ConversationList = ({
             conversation={conv}
             handleSidebarConversationClick={handleSidebarConversationClick}
             handleShareConversation={handleShareConversation}
+            handleDeleteConversation={handleDeleteConversation}
             handlePopoverOpen={handlePopoverOpen}
             isSelected={conv.id === currentId}
           />

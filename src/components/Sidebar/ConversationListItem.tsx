@@ -3,11 +3,13 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import { ConversationListItemProps } from 'types'
 import { theme } from 'constants/theme'
+import { DeleteOutline } from '@mui/icons-material'
 
 const ConversationListItem = ({
   conversation,
   handleSidebarConversationClick,
   handleShareConversation,
+  handleDeleteConversation,
   handlePopoverOpen,
   isSelected
 }: ConversationListItemProps) => (
@@ -37,6 +39,14 @@ const ConversationListItem = ({
       >
         <InfoOutlinedIcon sx={{ fontSize: 18 }} />
       </IconButton>
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation()
+          handleDeleteConversation(conversation.id)
+        }}
+      >
+        <DeleteOutline sx={{ fontSize: 20 }} />
+      </IconButton>
     </Stack>
   </ListItem>
 )
@@ -46,8 +56,8 @@ const listItemStyles = (isSelected: boolean) => ({
   borderRadius: '0.5rem',
   backgroundColor: theme.listItemBackgroundColor,
   border: isSelected
-    ? `2px solid ${theme.selectedListItemBorderColor}`
-    : `2px solid ${theme.listItemBackgroundColor}`,
+    ? `1px solid ${theme.selectedListItemBorderColor}`
+    : `1px solid ${theme.listItemBackgroundColor}`,
   padding: '1rem',
   display: 'flex',
   justifyContent: 'space-between',

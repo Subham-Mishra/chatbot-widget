@@ -42,6 +42,7 @@ export type ConversationListProps = {
   conversations: Conversation[]
   handleSidebarConversationClick: (id: string) => () => void
   handleShareConversation: (id: string) => void
+  handleDeleteConversation: (id: string) => void
   handlePopoverOpen: (
     event: React.MouseEvent<HTMLElement>,
     feedback: Feedback | null
@@ -53,6 +54,7 @@ export type ConversationListItemProps = {
   conversation: Conversation
   handleSidebarConversationClick: (id: string) => () => void
   handleShareConversation: (id: string) => void
+  handleDeleteConversation: (id: string) => void
   handlePopoverOpen: (
     event: React.MouseEvent<HTMLElement>,
     feedback: Feedback | null

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from 'redux/store'
 import { Box, styled } from '@mui/material'
-import { startConversation } from 'redux/slices/chatSlice'
+import { deleteConversation, startConversation } from 'redux/slices/chatSlice'
 import toast from 'react-hot-toast'
 import { useNavigate, useParams } from 'react-router-dom'
 import { nanoid } from 'nanoid'
@@ -53,6 +53,7 @@ const Sidebar: React.FC = () => {
     const newConversationId = nanoid(6)
     navigate(`/chat/${newConversationId}`)
     dispatch(startConversation(newConversationId))
+    toast.success('New conversation started!')
   }
 
   const handleShareConversation = (id: string) => {
@@ -62,6 +63,12 @@ const Sidebar: React.FC = () => {
     })
   }
 
+  const handleDeleteConversation = (id: string) => {
+    navigate(`/`)
+    dispatch(deleteConversation(id))
+    toast.success('Conversation deleted!')
+  }
+
   return (
     <SidebarContainer>
       <SidebarHeader createNewConversation={createNewConversation} />
@@ -69,6 +76,7 @@ const Sidebar: React.FC = () => {
         conversations={conversations}
         handleSidebarConversationClick={handleSidebarConversationClick}
         handleShareConversation={handleShareConversation}
+        handleDeleteConversation={handleDeleteConversation}
         handlePopoverOpen={handlePopoverOpen}
         currentId={id}
       />

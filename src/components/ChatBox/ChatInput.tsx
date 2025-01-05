@@ -68,15 +68,23 @@ const ChatInput = ({
           onClick={handleSendMessage}
           className="mr-2"
         >
-          Send
+          Send Message
         </Button>
         {currentConversation.messages.length > 0 && (
           <Button
             variant="outlined"
-            sx={{ color: '#cb2432', borderColor: '#cb2432' }}
+            sx={{
+              color: '#cb2432',
+              borderColor: '#cb2432',
+              ':hover': {
+                borderColor: '#cb2432',
+                color: '#fff',
+                backgroundColor: '#cb2432'
+              }
+            }}
             onClick={handleEndConversation}
           >
-            End
+            End & Save Chat
           </Button>
         )}
       </Stack>
